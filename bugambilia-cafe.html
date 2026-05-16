@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bugambilia Café — Proyecto</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Dirt&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --magenta:#E8007C; --dark:#111010; --darker:#0a0a0a; --white:#ffffff; --yellow:#f5c800; }
+  html, body { height: 100%; font-family:'Space Grotesk',sans-serif; background:var(--dark); color:var(--white); overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image: repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 80px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 80px); }
+
+  .topbar { position:relative; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:1.2rem 3rem; border-bottom:3px solid var(--magenta); background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); }
+  .topbar-back { font-family:'Rubik Dirt',cursive; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.2em; color:var(--magenta); text-decoration:none; display:flex; align-items:center; gap:0.6rem; transition:color 0.15s,gap 0.2s; }
+  .topbar-back:hover { color:var(--white); gap:1rem; }
+  .topbar-logo { font-family:'Rubik Dirt',cursive; font-size:1rem; color:rgba(255,255,255,0.18); text-transform:uppercase; letter-spacing:0.1em; }
+  .topbar-cat { font-family:'Rubik Dirt',cursive; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.2em; background:var(--magenta); color:var(--white); padding:0.3rem 1rem; border:2px solid var(--white); }
+
+  .proyecto-wrap { position:relative; z-index:1; display:grid; grid-template-columns:380px 1fr; min-height:calc(100vh - 68px); }
+
+  .col-texto { padding:3.5rem 2.8rem 3rem; display:flex; flex-direction:column; justify-content:space-between; border-right:3px solid rgba(232,0,124,0.2); background:rgba(0,0,0,0.3); }
+  .proyecto-numero { font-family:'Rubik Dirt',cursive; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
+  .proyecto-titulo { font-family:'Rubik Dirt',cursive; font-size:clamp(2.8rem,4vw,4.5rem); text-transform:uppercase; line-height:0.88; letter-spacing:-2px; color:var(--white); margin-top:1.5rem; }
+  .proyecto-titulo .accent { color:var(--magenta); }
+  .proyecto-subtag { display:inline-block; font-family:'Rubik Dirt',cursive; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.18em; color:var(--dark); background:var(--yellow); padding:0.28rem 0.9rem; margin-top:1.2rem; transform:rotate(-1.2deg); }
+  .descripcion-bloque { margin-top:2.5rem; flex:1; }
+  .descripcion-label { font-family:'Rubik Dirt',cursive; font-size:1.1rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--yellow); margin-bottom:0.8rem; display:flex; align-items:center; gap:0.6rem; }
+  .descripcion-label::after { content:''; flex:1; height:2px; background:linear-gradient(to right,var(--yellow),transparent); opacity:0.35; }
+  .descripcion-texto { font-size:0.88rem; line-height:1.85; color:rgba(255,255,255,0.58); font-weight:300; }
+  .descripcion-texto strong { color:var(--white); font-weight:600; }
+  .meta-bloque { margin-top:2.5rem; padding-top:1.8rem; border-top:1px solid rgba(232,0,124,0.2); display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+  .meta-anio { font-family:'Rubik Dirt',cursive; font-size:1.1rem; color:var(--yellow); font-style:italic; letter-spacing:0.05em; }
+  .meta-cat-label { font-family:'Rubik Dirt',cursive; font-size:0.58rem; text-transform:uppercase; letter-spacing:0.25em; color:rgba(255,255,255,0.22); display:block; margin-bottom:0.35rem; text-align:right; }
+  .badge-grande { font-family:'Rubik Dirt',cursive; font-size:1rem; text-transform:uppercase; letter-spacing:0.12em; background:var(--magenta); color:var(--white); padding:0.45rem 1.5rem; border:3px solid var(--white); display:inline-block; transition:background 0.15s,color 0.15s,transform 0.15s; cursor:default; }
+  .badge-grande:hover { background:var(--white); color:var(--magenta); transform:rotate(-1deg) scale(1.04); }
+
+  .col-galeria { position:relative; background:#000; overflow:hidden; }
+  .slide { position:absolute; inset:0; opacity:0; transition:opacity 0.85s cubic-bezier(0.4,0,0.2,1); }
+  .slide.active { opacity:1; }
+  .slide img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 7s ease; }
+  .slide.active img { transform:scale(1.04); }
+  .col-galeria::before { content:''; position:absolute; top:0; left:0; bottom:0; width:60px; background:linear-gradient(to right,rgba(0,0,0,0.4),transparent); z-index:5; pointer-events:none; }
+
+  .slide-btn { position:absolute; top:50%; transform:translateY(-50%); z-index:10; width:52px; height:52px; background:rgba(0,0,0,0.5); border:2px solid rgba(255,255,255,0.6); color:var(--white); font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; font-family:sans-serif; line-height:1; backdrop-filter:blur(6px); }
+  .slide-btn:hover { background:var(--magenta); border-color:var(--white); }
+  .slide-btn.prev { left:1.2rem; }
+  .slide-btn.next { right:1.2rem; }
+
+  .galeria-hud { position:absolute; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:10; display:flex; flex-direction:column; align-items:center; gap:0.6rem; }
+  .galeria-dots { display:flex; gap:0.55rem; }
+  .dot { width:10px; height:10px; background:rgba(255,255,255,0.3); border:2px solid rgba(255,255,255,0.7); cursor:pointer; transition:background 0.25s,transform 0.2s; display:block; }
+  .dot.active { background:var(--white); transform:scale(1.35); }
+  .slide-counter { font-family:'Rubik Dirt',cursive; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.5); background:rgba(0,0,0,0.45); padding:0.2rem 0.7rem; backdrop-filter:blur(4px); }
+
+  .marquee-strip { position:relative; z-index:5; background:var(--darker); overflow:hidden; white-space:nowrap; padding:0.6rem 0; border-top:2px solid var(--magenta); }
+  .marquee-inner { display:inline-block; animation:marquee 20s linear infinite; font-family:'Rubik Dirt',cursive; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--magenta); }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+  .proyecto-numero    { animation:fadeUp 0.5s ease both 0.1s; }
+  .proyecto-titulo    { animation:fadeUp 0.6s ease both 0.2s; }
+  .proyecto-subtag    { animation:fadeUp 0.5s ease both 0.32s; }
+  .descripcion-bloque { animation:fadeUp 0.6s ease both 0.42s; }
+  .meta-bloque        { animation:fadeUp 0.5s ease both 0.55s; }
+
+  @media (max-width:900px) {
+    .topbar { padding:1rem 1.5rem; }
+    .proyecto-wrap { grid-template-columns:1fr; }
+    .col-texto { padding:2.5rem 1.8rem 2rem; border-right:none; border-bottom:3px solid rgba(232,0,124,0.25); }
+    .col-galeria { min-height:65vw; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="portfolio-jorge.html" class="topbar-back">← Volver al portfolio</a>
+  <span class="topbar-logo">JCG ✦ Portfolio</span>
+  <span class="topbar-cat">Branding</span>
+</header>
+
+<main class="proyecto-wrap">
+  <section class="col-texto">
+    <p class="proyecto-numero">✦ 001 / Branding — 2023</p>
+    <div>
+      <h1 class="proyecto-titulo">Bugambilia<br><span class="accent">Café</span></h1>
+      <span class="proyecto-subtag">Identidad Visual Completa</span>
+      <div class="descripcion-bloque">
+        <p class="descripcion-label">Descripción</p>
+        <p class="descripcion-texto">
+          Identidad visual creada para <strong>Emy González</strong>, emprendedora guatemalteca que impulsó su propia marca de café artesanal desde cero.<br><br>
+          El proyecto abarcó el desarrollo completo de la marca: logotipo, paleta de color, tipografía, diseño de empaque y sistema de aplicaciones visuales, buscando transmitir calidez, autenticidad y el espíritu independiente de la marca.
+        </p>
+      </div>
+    </div>
+    <div class="meta-bloque">
+      <p class="meta-anio">Año — 2023</p>
+      <div>
+        <span class="meta-cat-label">Categoría</span>
+        <span class="badge-grande">Branding</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="col-galeria" id="galeriaWrap">
+    <div class="slide active"><img src="Bugambilia Café/1.png" alt="Bugambilia Café 1"></div>
+    <div class="slide"><img src="Bugambilia Café/2.png" alt="Bugambilia Café 2"></div>
+    <div class="slide"><img src="Bugambilia Café/3.png" alt="Bugambilia Café 3"></div>
+    <div class="slide"><img src="Bugambilia Café/4.png" alt="Bugambilia Café 4"></div>
+    <button class="slide-btn prev" id="btnPrev">‹</button>
+    <button class="slide-btn next" id="btnNext">›</button>
+    <div class="galeria-hud">
+      <div class="galeria-dots" id="gDots">
+        <span class="dot active" data-i="0"></span>
+        <span class="dot" data-i="1"></span>
+        <span class="dot" data-i="2"></span>
+        <span class="dot" data-i="3"></span>
+      </div>
+      <span class="slide-counter" id="slideCounter">1 / 4</span>
+    </div>
+  </section>
+</main>
+
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-inner">BUGAMBILIA CAFÉ ✦ BRANDING ✦ EMY GONZÁLEZ ✦ GUATEMALA ✦ 2023 ✦ IDENTIDAD VISUAL ✦ EMPAQUE ✦ BUGAMBILIA CAFÉ ✦ BRANDING ✦ EMY GONZÁLEZ ✦ GUATEMALA ✦ 2023 ✦ IDENTIDAD VISUAL ✦ EMPAQUE ✦ </div>
+</div>
+
+<script>
+  const slides=document.querySelectorAll('.slide'), dots=document.querySelectorAll('.dot'), counter=document.getElementById('slideCounter'), wrap=document.getElementById('galeriaWrap');
+  let current=0, timer;
+  function goTo(n){ slides[current].classList.remove('active'); dots[current].classList.remove('active'); current=(n+slides.length)%slides.length; slides[current].classList.add('active'); dots[current].classList.add('active'); counter.textContent=(current+1)+' / '+slides.length; }
+  function startTimer(){ timer=setInterval(()=>goTo(current+1),3800); }
+  function resetTimer(){ clearInterval(timer); startTimer(); }
+  document.getElementById('btnPrev').addEventListener('click',()=>{goTo(current-1);resetTimer();});
+  document.getElementById('btnNext').addEventListener('click',()=>{goTo(current+1);resetTimer();});
+  dots.forEach(d=>d.addEventListener('click',()=>{goTo(+d.dataset.i);resetTimer();}));
+  let tx=0;
+  wrap.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  wrap.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>40){goTo(current+(dx<0?1:-1));resetTimer();}});
+  wrap.addEventListener('mouseenter',()=>clearInterval(timer));
+  wrap.addEventListener('mouseleave',startTimer);
+  startTimer();
+</script>
+</body>
+</html>
